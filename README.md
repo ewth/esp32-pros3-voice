@@ -15,3 +15,20 @@ I am in no way affiliated with Espressif or Unexpected Maker.
 
 * Use QSPI PSRAM.
 * TODO: Work out directory structure/better way to incorporate into ESP-Skainet.
+
+## Models
+
+So far, the following have been successful:
+
+### VADNet
+
+* Detecting voice activity (as opposed to other sounds/noise).
+
+### Wakenet 9
+
+* Detecting wake up words: "Hey, Wanda", "Alexa", "Hi, Joy".
+
+### MultiNet 7
+
+* Detecting default voice commands.
+* Detecting custom voice commands.
