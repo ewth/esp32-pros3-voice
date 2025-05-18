@@ -14,3 +14,4 @@ I am in no way affiliated with Espressif or Unexpected Maker.
 ## Notes
 
 * Use QSPI PSRAM.
+* TODO: Work out directory structure/better way to incorporate into ESP-Skainet.
