@@ -18,6 +18,10 @@
 #include "esp_vfs_fat.h"
 #include "sdmmc_cmd.h"
 
+// These are just included for IDE help.
+#include "esp_idf_version.h"
+#include "esp32_s3_ewth_pros3_voice_board.h"
+
 #if ((SOC_SDMMC_HOST_SUPPORTED) && (FUNC_SDMMC_EN))
 #include "driver/sdmmc_host.h"
 #endif /* ((SOC_SDMMC_HOST_SUPPORTED) && (FUNC_SDMMC_EN)) */
@@ -30,8 +34,6 @@
 static sdmmc_card_t *card;
 static const char *TAG = "board";
 
-static int s_play_sample_rate = 44100;
-static int s_play_channel_format = 1;
 static int s_bits_per_chan = 24;
 
 #if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0)
@@ -63,6 +65,7 @@ static esp_err_t bsp_i2s_init(i2s_port_t i2s_num, uint32_t sample_rate, int chan
     esp_err_t ret_val = ESP_OK;
 
 #if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0)
+    ESP_LOGI(TAG, "ESP-IDF version >= 5.0.0, using new I2S API");
     i2s_slot_mode_t channel_fmt = I2S_SLOT_MODE_MONO;
     if (channel_format == 1)
     {
@@ -75,16 +78,27 @@ static esp_err_t bsp_i2s_init(i2s_port_t i2s_num, uint32_t sample_rate, int chan
         channel_fmt = I2S_SLOT_MODE_MONO;
     }
 
-    if (bits_per_chan != 24)
+    if (bits_per_chan != 24 && bits_per_chan != 16)
     {
         ESP_LOGE(TAG, "Unable to configure bits_per_chan %d", bits_per_chan);
-        bits_per_chan = 24;
+        bits_per_chan = 16;
     }
 
     i2s_chan_config_t chan_cfg = I2S_CHANNEL_DEFAULT_CONFIG(i2s_num, I2S_ROLE_MASTER);
     ret_val |= i2s_new_channel(&chan_cfg, NULL, &rx_handle);
 
     i2s_std_config_t std_cfg = I2S_CONFIG_DEFAULT(sample_rate, channel_fmt, bits_per_chan);
+
+    // Must be explicitly set for the module used
+    std_cfg.slot_cfg.slot_bit_width = bits_per_chan;
+    std_cfg.slot_cfg.slot_mask = I2S_STD_SLOT_LEFT; // Only one channel
+
+    if (bits_per_chan == 24)
+    {
+        // The mclk_multiple could be any multiple of sample rate.
+        // ESP-IDF v5.0.8 only supports 384 as a multiple of sample 24 (later versions support 192).
+        std_cfg.clk_cfg.mclk_multiple = I2S_MCLK_MULTIPLE_384;
+    }
 
     ret_val |= i2s_channel_init_std_mode(rx_handle, &std_cfg);
     ret_val |= i2s_channel_enable(rx_handle);
@@ -185,28 +199,11 @@ char *bsp_get_input_format(void)
 esp_err_t bsp_board_init(uint32_t sample_rate, int channel_format, int bits_per_chan)
 {
     ESP_LOGI(TAG, "Initializing esp32s3-ewth-pros3-voice board...");
-    ESP_LOGI(TAG, "Sample rate: %d", sample_rate);
-    ESP_LOGI(TAG, "Channel format: %d", channel_format);
-    ESP_LOGI(TAG, "Bits per channel: %d", bits_per_chan);
+
     /*!< Initialize I2C bus, used for audio codec*/
     bsp_i2c_init(I2C_NUM, I2C_CLK);
-    s_play_sample_rate = sample_rate;
 
-    if (channel_format != 2 && channel_format != 1)
-    {
-        ESP_LOGE(TAG, "Unable to configure channel_format");
-        channel_format = 1;
-    }
-    s_play_channel_format = channel_format;
-
-    if (bits_per_chan != 32 && bits_per_chan != 16 && bits_per_chan != 24)
-    {
-        ESP_LOGE(TAG, "Unable to configure bits_per_chan");
-        bits_per_chan = 24;
-    }
-    s_bits_per_chan = bits_per_chan;
-
-    bsp_i2s_init(I2S_NUM_1, 44100, 1, 24);
+    bsp_i2s_init(I2S_NUM_AUTO, sample_rate, channel_format, bits_per_chan);
 
     return ESP_OK;
 }
@@ -351,6 +348,8 @@ esp_err_t bsp_sdcard_deinit(char *mount_point)
 
     /* Make SD/MMC card information structure pointer NULL */
     card = NULL;
+
+    ESP_LOGI(TAG, "SD Card unmounted: %s", mount_point);
 
     return ret_val;
 }

@@ -32,7 +32,7 @@
  * @brief ESP32-S3-EWTH-PROS3-VOICE-BOARD SDSPI GPIO definition
  *
  */
-#define FUNC_SDSPI_EN (0)
+#define FUNC_SDSPI_EN (1)
 #define SDSPI_HOST (SPI2_HOST)
 #define GPIO_SDSPI_CS (GPIO_NUM_39)
 #define GPIO_SDSPI_SCLK (GPIO_NUM_36)
@@ -73,20 +73,16 @@
 
 #if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0)
 
-#define I2S_CONFIG_DEFAULT(sample_rate, channel_fmt, bits_per_chan) {        \
-    .clk_cfg = {                                                             \
-        .sample_rate_hz = sample_rate,                                       \
-        .clk_src = I2S_CLK_SRC_DEFAULT,                                      \
-        .mclk_multiple = I2S_MCLK_MULTIPLE_384,                              \
-    },                                                                       \
-    .slot_cfg = I2S_STD_PHILIPS_SLOT_DEFAULT_CONFIG(24, I2S_SLOT_MODE_MONO), \
-    .gpio_cfg = {                                                            \
-        .mclk = GPIO_I2S_MCLK,                                               \
-        .bclk = GPIO_I2S_SCLK,                                               \
-        .ws = GPIO_I2S_LRCK,                                                 \
-        .dout = GPIO_I2S_DOUT,                                               \
-        .din = GPIO_I2S_SDIN,                                                \
-    },                                                                       \
+#define I2S_CONFIG_DEFAULT(sample_rate, channel_fmt, bits_per_chan) {                   \
+    .clk_cfg = I2S_STD_CLK_DEFAULT_CONFIG(sample_rate),                                 \
+    .slot_cfg = I2S_STD_PHILIPS_SLOT_DEFAULT_CONFIG(bits_per_chan, I2S_SLOT_MODE_MONO), \
+    .gpio_cfg = {                                                                       \
+        .mclk = GPIO_I2S_MCLK,                                                          \
+        .bclk = GPIO_I2S_SCLK,                                                          \
+        .ws = GPIO_I2S_LRCK,                                                            \
+        .dout = GPIO_I2S_DOUT,                                                          \
+        .din = GPIO_I2S_SDIN,                                                           \
+    },                                                                                  \
 }
 
 #else
