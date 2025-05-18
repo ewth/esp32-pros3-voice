@@ -62,9 +62,11 @@ esp_err_t bsp_i2c_init(i2c_port_t i2c_num, uint32_t clk_speed)
 // static esp_err_t bsp_i2s_init(i2s_port_t i2s_num, uint32_t sample_rate, i2s_channel_fmt_t channel_format, i2s_bits_per_chan_t bits_per_chan)
 static esp_err_t bsp_i2s_init(i2s_port_t i2s_num, uint32_t sample_rate, int channel_format, int bits_per_chan)
 {
-    esp_err_t ret_val = ESP_OK;
+    esp_err_t ret_val = ESP_FAIL;
 
 #if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0)
+    ret_val = ESP_OK;
+
     ESP_LOGI(TAG, "ESP-IDF version >= 5.0.0, using new I2S API");
     i2s_slot_mode_t channel_fmt = I2S_SLOT_MODE_MONO;
     if (channel_format == 1)
@@ -103,37 +105,6 @@ static esp_err_t bsp_i2s_init(i2s_port_t i2s_num, uint32_t sample_rate, int chan
     ret_val |= i2s_channel_init_std_mode(rx_handle, &std_cfg);
     ret_val |= i2s_channel_enable(rx_handle);
 
-#else
-    i2s_channel_fmt_t channel_fmt = I2S_CHANNEL_FMT_ONLY_LEFT;
-    if (channel_format == 1)
-    {
-        channel_fmt = I2S_CHANNEL_FMT_ONLY_LEFT;
-    }
-    else
-    {
-        ESP_LOGE(TAG, "Unable to configure channel_format %d", channel_format);
-        channel_format = 1;
-        channel_fmt = I2S_CHANNEL_FMT_ONLY_LEFT;
-    }
-
-    if (bits_per_chan != 24)
-    {
-        ESP_LOGE(TAG, "Unable to configure bits_per_chan %d", bits_per_chan);
-        bits_per_chan = 24;
-    }
-
-    i2s_config_t i2s_config = I2S_CONFIG_DEFAULT(sample_rate, channel_fmt, bits_per_chan);
-
-    i2s_pin_config_t pin_config = {
-        .bck_io_num = GPIO_I2S_SCLK,
-        .ws_io_num = GPIO_I2S_LRCK,
-        .data_out_num = GPIO_I2S_DOUT,
-        .data_in_num = GPIO_I2S_SDIN,
-        .mck_io_num = GPIO_I2S_MCLK,
-    };
-
-    ret_val |= i2s_driver_install(i2s_num, &i2s_config, 0, NULL);
-    ret_val |= i2s_set_pin(i2s_num, &pin_config);
 #endif
 
     return ret_val;
@@ -171,11 +142,7 @@ esp_err_t bsp_get_feed_data(bool is_get_raw_channel, int16_t *buffer, int buffer
     size_t bytes_read;
     int audio_chunksize = buffer_len / (sizeof(int32_t));
 
-#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0)
     ret = i2s_channel_read(rx_handle, buffer, buffer_len, &bytes_read, portMAX_DELAY);
-#else
-    ret = i2s_read(I2S_NUM_1, buffer, buffer_len, &bytes_read, portMAX_DELAY);
-#endif
 
     if (bytes_read == 0)
     {

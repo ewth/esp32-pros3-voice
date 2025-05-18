@@ -85,22 +85,4 @@
     },                                                                                  \
 }
 
-#else
-
-#define I2S_CONFIG_DEFAULT(sample_rate, channel_fmt, bits_per_chan) { \
-    .mode = I2S_MODE_MASTER | I2S_MODE_RX,                            \
-    .sample_rate = sample_rate,                                       \
-    .bits_per_sample = I2S_BITS_PER_SAMPLE_24_BIT,                    \
-    .channel_format = I2S_CHANNEL_FMT_ONLY_LEFT,                      \
-    .communication_format = I2S_COMM_FORMAT_STAND_I2S,                \
-    .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,                         \
-    .dma_buf_count = 6,                                               \
-    .dma_buf_len = 160,                                               \
-    .use_apll = false,                                                \
-    .tx_desc_auto_clear = true,                                       \
-    .fixed_mclk = 0,                                                  \
-    .mclk_multiple = I2S_MCLK_MULTIPLE_DEFAULT,                       \
-    .bits_per_chan = bits_per_chan,                                   \
-}
-
 #endif
