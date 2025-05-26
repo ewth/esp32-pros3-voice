@@ -4,7 +4,7 @@
 #include "esp_idf_version.h"
 
 /**
- * @brief ESP32-S3-EWTH-PROS3-VOICE-BOARD I2C GPIO definition
+ * @brief ewth_pros3_board I2C GPIO definition
  *
  */
 #define FUNC_I2C_EN (1)
@@ -14,7 +14,7 @@
 #define GPIO_I2C_SDA (GPIO_NUM_8)
 
 /**
- * @brief ESP32-S3-EWTH-PROS3-VOICE-BOARD SDMMC GPIO definition
+ * @brief ewth_pros3_board SDMMC GPIO definition
  *
  * @note Only avaliable when PMOD connected
  */
@@ -29,7 +29,7 @@
 #define GPIO_SDMMC_DET (GPIO_NUM_NC)
 
 /**
- * @brief ESP32-S3-EWTH-PROS3-VOICE-BOARD SDSPI GPIO definition
+ * @brief ewth_pros3_board SDSPI GPIO definition
  *
  */
 #define FUNC_SDSPI_EN (1)
@@ -40,7 +40,7 @@
 #define GPIO_SDSPI_MOSI (GPIO_NUM_35)
 
 /**
- * @brief ESP32-S3-EWTH-PROS3-VOICE-BOARD I2S GPIO definition
+ * @brief ewth_pros3_board I2S GPIO definition
  *
  */
 #define FUNC_I2S_EN (1)
@@ -51,7 +51,7 @@
 #define GPIO_I2S_DOUT (GPIO_NUM_NC)
 
 /**
- * @brief ESP32-S3-EWTH-PROS3-VOICE-BOARD I2S GPIO definition
+ * @brief ewth_pros3_board I2S GPIO definition
  *
  */
 #define FUNC_I2S0_EN (0)

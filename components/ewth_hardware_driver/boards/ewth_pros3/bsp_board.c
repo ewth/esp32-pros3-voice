@@ -1,5 +1,5 @@
 /**
- * This BSP board code is for the ESP32-S3-EWTH-PROS3-VOICE-BOARD.
+ * This BSP board code is for the "custom" board for this project.
  *  ... which is just a prototype on a breadboard. I wanted to play with voice detection :)
  *  https://github.com/ewth/esp32-pros3-voice
  *
@@ -20,7 +20,7 @@
 
 // These are just included for IDE help.
 #include "esp_idf_version.h"
-#include "esp32_s3_ewth_pros3_voice_board.h"
+#include "ewth_pros3_board.h"
 
 #if ((SOC_SDMMC_HOST_SUPPORTED) && (FUNC_SDMMC_EN))
 #include "driver/sdmmc_host.h"

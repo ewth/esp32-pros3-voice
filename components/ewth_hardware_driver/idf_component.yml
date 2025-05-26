@@ -1,0 +1,7 @@
+## IDF Component Manager Manifest File
+url: "https://github.com/ewth/esp32-pros3-voice"
+version: "0.0.1"
+targets:
+  - esp32s3
+idf:
+  version: ">=5.0.0"

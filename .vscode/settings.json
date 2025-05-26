@@ -1,0 +1,13 @@
+{
+    "idf.openOcdConfigs": [
+        "board/esp32s3-builtin.cfg"
+    ],
+    "idf.customExtraVars": {
+        "IDF_TARGET": "esp32s3"
+    },
+    "idf.port": "/dev/ttyACM0",
+    "idf.flashType": "UART",
+    "idf.espIdfPath": "/home/ewan/esp/v5.4.1/esp-idf",
+    "idf.toolsPath": "/home/ewan/.espressif",
+    "idf.pythonInstallPath": "/usr/bin/python",
+}
